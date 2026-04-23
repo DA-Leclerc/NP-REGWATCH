@@ -1,0 +1,456 @@
+# =============================================================================
+# Nord Paradigm Regwatch — Source Registry
+# Repo: DA-Leclerc/NP-REGWATCH
+# Last curated: 2026-04-23 by Dominic
+#
+# Curation discipline: every source must tie to a Brèche Pro vertical module,
+# a Kind 2 / Kind 3 rule, or Signal editorial scope. Sources that don't earn
+# their weekly check get dropped during quarterly review.
+#
+# Schema reference:
+#   id                 — stable kebab-case identifier
+#   url                — exact URL to fetch
+#   category           — ordre | government | vendor-policy | privacy-regulator | news-commentary
+#   vertical           — matches Brèche Pro vertical module ID, or 'all'
+#   priority           — critical | high | medium | low
+#   check_frequency    — weekly | biweekly | monthly
+#   language           — fr | en | bilingual
+#   auto_promote       — always | on-keyword-match | never
+#   keyword_filter     — required when auto_promote: on-keyword-match
+#   notes              — human notes about what matters on this page
+# =============================================================================
+
+sources:
+
+  # -----------------------------------------------------------------------------
+  # QUEBEC ORDRES PROFESSIONNELS (Tier 1 — regulated professions)
+  # -----------------------------------------------------------------------------
+
+  - id: cpa-quebec-press
+    url: https://cpaquebec.ca/fr/salle-de-presse/nouvelles-et-publications/
+    category: ordre
+    vertical: professional-services-regulated
+    priority: high
+    check_frequency: weekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [IA, intelligence artificielle, ligne directrice, gouvernance, Loi 25, secret professionnel, numérique, données]
+    notes: "CPA Québec press page. Source of truth for CPA AI guideline updates. April 2025 model guideline published here."
+
+  - id: barreau-quebec-ai
+    url: https://www.barreau.qc.ca/en/membres-ordre/ressources/standards-tools-references-guides/intelligence-artificielle-generative/
+    category: ordre
+    vertical: professional-services-regulated
+    priority: high
+    check_frequency: weekly
+    language: bilingual
+    auto_promote: always
+    notes: "Barreau du Québec dedicated AI page. Any change is material for the lawyer Kind 2 rule."
+
+  - id: chambre-notaires-technologie
+    url: https://www.cnq.org/
+    category: ordre
+    vertical: professional-services-regulated
+    priority: medium
+    check_frequency: biweekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA, technologie, numérique, acte notarié, solution technologique]
+    notes: "Chambre des notaires. Monitor for AI-specific guidance and 'solutions technologiques homologuées' framework updates."
+
+  - id: oiq-ai
+    url: https://www.oiq.qc.ca/
+    category: ordre
+    vertical: professional-services-regulated
+    priority: medium
+    check_frequency: biweekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA, responsabilité professionnelle, supervision, outil technologique]
+    notes: "Ordre des ingénieurs du Québec. OIQ position that engineer cannot offload responsibility to AI — monitor for evolution."
+
+  - id: chad-ai
+    url: https://chad.ca/
+    category: ordre
+    vertical: professional-services-regulated
+    priority: medium
+    check_frequency: biweekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA, protection des renseignements, transparence, compétence]
+    notes: "Chambre de l'assurance de dommages. 2024 AI guide is current anchor; monitor for revisions."
+
+  - id: csf-ai
+    url: https://www.chambresf.com/
+    category: ordre
+    vertical: professional-services-regulated
+    priority: low
+    check_frequency: monthly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA, formation IA]
+    notes: "CSF (Chambre de la sécurité financière). Lower document maturity than ChAD per April 2026 review; monitor for catch-up."
+
+  - id: cmq-ai
+    url: https://www.cmq.org/
+    category: ordre
+    vertical: healthcare-regulated
+    priority: critical
+    check_frequency: weekly
+    language: fr
+    auto_promote: always
+    notes: "Collège des médecins du Québec. Strongest healthcare-ordre AI document maturity as of 2026. Any change affects medical clinic Kind 2."
+
+  - id: oppq-ai
+    url: https://oppq.qc.ca/
+    category: ordre
+    vertical: healthcare-regulated
+    priority: critical
+    check_frequency: weekly
+    language: fr
+    auto_promote: always
+    notes: "Ordre professionnel de la physiothérapie du Québec. OPPQ 2023 warning against public generative-AI tools is specific published restriction; monitor for updates or revisions."
+
+  - id: opq-ai
+    url: https://www.ordrepsy.qc.ca/
+    category: ordre
+    vertical: healthcare-regulated
+    priority: high
+    check_frequency: weekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA, outils numériques, tenue de dossiers, supervision clinique]
+    notes: "Ordre des psychologues du Québec. Substantial thematic dossier; monitor for specific rule-making."
+
+  - id: opq-pharm-ai
+    url: https://www.opq.org/
+    category: ordre
+    vertical: healthcare-regulated
+    priority: medium
+    check_frequency: biweekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA, outils technologiques, vérification d'ordonnance]
+    notes: "Ordre des pharmaciens du Québec. Educational content currently; monitor for rule-grade guidance."
+
+  - id: odq-ai
+    url: https://www.odq.qc.ca/
+    category: ordre
+    vertical: healthcare-regulated
+    priority: medium
+    check_frequency: biweekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA, imagerie, radiologie, numérique]
+    notes: "Ordre des dentistes du Québec. Discussion-active; no explicit AI document as of April 2026; monitor for publication."
+
+  # -----------------------------------------------------------------------------
+  # QUEBEC GOVERNMENT + REGULATORS
+  # -----------------------------------------------------------------------------
+
+  - id: cai-quebec
+    url: https://www.cai.gouv.qc.ca/
+    category: privacy-regulator
+    vertical: all
+    priority: critical
+    check_frequency: weekly
+    language: fr
+    auto_promote: always
+    notes: "Commission d'accès à l'information du Québec. Loi 25 enforcement body. All changes material."
+
+  - id: quebec-mcn-ia
+    url: https://www.quebec.ca/gouvernement/ministere/cybersecurite-numerique
+    category: government
+    vertical: all
+    priority: high
+    check_frequency: weekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA générative, lignes directrices, gouvernance IA, organismes publics]
+    notes: "Ministère de la Cybersécurité et du Numérique. December 2025 IAG framework for public bodies sets precedent Quebec private-sector may follow."
+
+  - id: amf-ai
+    url: https://lautorite.qc.ca/
+    category: government
+    vertical: professional-services-regulated
+    priority: medium
+    check_frequency: biweekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA, secteur financier, lignes directrices]
+    notes: "Autorité des marchés financiers. Financial-sector AI guidelines; relevant for financial advisor / broker sub-verticals."
+
+  - id: gazette-officielle-ai
+    url: https://www.publicationsduquebec.gouv.qc.ca/fr/gazette-officielle
+    category: government
+    vertical: all
+    priority: high
+    check_frequency: weekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [intelligence artificielle, IA, Loi 25, protection des renseignements, santé numérique]
+    notes: "Quebec's official gazette. Regulatory and legislative changes land here."
+
+  # -----------------------------------------------------------------------------
+  # FEDERAL CANADA
+  # -----------------------------------------------------------------------------
+
+  - id: priv-gc-ai
+    url: https://www.priv.gc.ca/en/opc-news/news-and-announcements/
+    category: privacy-regulator
+    vertical: all
+    priority: high
+    check_frequency: weekly
+    language: bilingual
+    auto_promote: always
+    notes: "Office of the Privacy Commissioner of Canada. Federal privacy + AI guidance. Material for cross-province work."
+
+  - id: innovation-gc-ai
+    url: https://ised-isde.canada.ca/site/innovation-better-canada/en/artificial-intelligence
+    category: government
+    vertical: all
+    priority: high
+    check_frequency: weekly
+    language: bilingual
+    auto_promote: on-keyword-match
+    keyword_filter: [AI regulation, artificial intelligence act, AI framework, code of practice]
+    notes: "ISED / Innovation Canada. Source for federal AI regulation evolution. Monitor for successor legislation."
+
+  # -----------------------------------------------------------------------------
+  # VENDOR POLICY PAGES (Tier 1 — critical, any change material)
+  # -----------------------------------------------------------------------------
+
+  - id: microsoft-copilot-privacy
+    url: https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-privacy
+    category: vendor-policy
+    vertical: all
+    priority: critical
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "Microsoft 365 Copilot privacy page. Contains the 'queries may be processed in US, EU, or other regions' language that drives the Copilot Kind 2 rule. Diff-sensitive."
+
+  - id: microsoft-copilot-data-residency
+    url: https://learn.microsoft.com/en-us/microsoft-365/enterprise/m365-dr-service-copilot
+    category: vendor-policy
+    vertical: all
+    priority: critical
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "Data residency specifics for Copilot. Monitor for Canadian in-country processing availability (expected 2027)."
+
+  - id: microsoft-product-terms-privacy
+    url: https://learn.microsoft.com/en-us/microsoft-365/enterprise/m365-dr-product-terms-dr
+    category: vendor-policy
+    vertical: all
+    priority: critical
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "Microsoft Privacy and Security Product Terms. Any change to at-rest commitments is material."
+
+  - id: anthropic-trust-center
+    url: https://trust.anthropic.com/
+    category: vendor-policy
+    vertical: all
+    priority: critical
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "Anthropic Trust Center. Claude for Work / API DPA framework."
+
+  - id: anthropic-privacy
+    url: https://www.anthropic.com/legal/privacy
+    category: vendor-policy
+    vertical: all
+    priority: high
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "Anthropic privacy policy. Data retention, training-data commitments."
+
+  - id: openai-enterprise-privacy
+    url: https://openai.com/enterprise-privacy/
+    category: vendor-policy
+    vertical: all
+    priority: high
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "OpenAI enterprise privacy commitments. Relevant when clients evaluate ChatGPT Enterprise for regulated-profession workflows."
+
+  - id: google-workspace-privacy
+    url: https://workspace.google.com/terms/privacy.html
+    category: vendor-policy
+    vertical: all
+    priority: high
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "Google Workspace privacy. Gemini integration residency/processing framework."
+
+  - id: google-gemini-canada
+    url: https://cloud.google.com/privacy
+    category: vendor-policy
+    vertical: all
+    priority: medium
+    check_frequency: biweekly
+    language: en
+    auto_promote: on-keyword-match
+    keyword_filter: [Canada, data residency, sovereign, PIPEDA, Loi 25]
+    notes: "Google Cloud data-residency posture for Canadian customers. Less mature than Microsoft for Canada-resident AI workflows."
+
+  - id: clio-security
+    url: https://www.clio.com/security/
+    category: vendor-policy
+    vertical: professional-services-regulated
+    priority: high
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "Clio security + Canadian hosting posture. Primary Canada-facing legal-tech reference for Barreau lawyers."
+
+  - id: heidi-health-security
+    url: https://www.heidihealth.com/security
+    category: vendor-policy
+    vertical: healthcare-regulated
+    priority: high
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "Heidi Health data sovereignty claims. Default scribe recommendation for Quebec healthcare private practice."
+
+  - id: jane-app-security
+    url: https://jane.app/security
+    category: vendor-policy
+    vertical: healthcare-regulated
+    priority: high
+    check_frequency: weekly
+    language: bilingual
+    auto_promote: always
+    notes: "Jane.app security + Canadian hosting (Montreal / Calgary). Strong default multi-practitioner PMS for private allied health."
+
+  - id: abridge-security
+    url: https://www.abridge.com/security
+    category: vendor-policy
+    vertical: healthcare-regulated
+    priority: medium
+    check_frequency: weekly
+    language: en
+    auto_promote: always
+    notes: "Abridge security. As of April 2026, no public Canadian-residency commitment; monitor for change that would move it back to default-example status."
+
+  # -----------------------------------------------------------------------------
+  # AI DEV TOOLS (tech-software module)
+  # -----------------------------------------------------------------------------
+
+  - id: github-copilot-privacy
+    url: https://docs.github.com/en/copilot/overview-of-github-copilot/about-github-copilot-individual
+    category: vendor-policy
+    vertical: technology-software
+    priority: medium
+    check_frequency: biweekly
+    language: en
+    auto_promote: on-keyword-match
+    keyword_filter: [data, privacy, enterprise, business, residency, governance]
+    notes: "GitHub Copilot. Team vs solo workflow governance matters for tech firms serving enterprise clients."
+
+  # -----------------------------------------------------------------------------
+  # STANDARDS BODIES
+  # -----------------------------------------------------------------------------
+
+  - id: iso-42001
+    url: https://www.iso.org/standard/81230.html
+    category: government
+    vertical: all
+    priority: medium
+    check_frequency: monthly
+    language: en
+    auto_promote: on-keyword-match
+    keyword_filter: [revision, amendment, update, new edition]
+    notes: "ISO/IEC 42001:2023. Stable standard; monitor for revisions only."
+
+  # -----------------------------------------------------------------------------
+  # QUEBEC HEALTH-INFORMATION REGIME
+  # -----------------------------------------------------------------------------
+
+  - id: quebec-sante-numerique
+    url: https://www.quebec.ca/sante/systeme-et-services-de-sante
+    category: government
+    vertical: healthcare-regulated
+    priority: medium
+    check_frequency: biweekly
+    language: fr
+    auto_promote: on-keyword-match
+    keyword_filter: [renseignements de santé, protection, numérique, IA, intelligence artificielle, P-9.0001]
+    notes: "Quebec's dedicated health-information regime. Monitor for regulatory changes affecting healthcare AI."
+
+  # -----------------------------------------------------------------------------
+  # EU / CROSS-JURISDICTION (for tech-software clients)
+  # -----------------------------------------------------------------------------
+
+  - id: eu-ai-act-status
+    url: https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai
+    category: government
+    vertical: technology-software
+    priority: medium
+    check_frequency: biweekly
+    language: en
+    auto_promote: on-keyword-match
+    keyword_filter: [enforcement, deadline, implementation, guidance, code of practice]
+    notes: "EU AI Act implementation progress. Material for Quebec tech firms serving EU clients."
+
+  # -----------------------------------------------------------------------------
+  # NEWS AND COMMENTARY (never auto-promote; context-only)
+  # -----------------------------------------------------------------------------
+
+  - id: blogue-crl
+    url: https://www.blogueducrl.com/
+    category: news-commentary
+    vertical: all
+    priority: low
+    check_frequency: weekly
+    language: fr
+    auto_promote: never
+    notes: "Legal-research commentary on Quebec privacy and AI. Context only; never auto-promote, log as context for Dominic's review."
+
+  - id: lapresse-ia
+    url: https://www.lapresse.ca/
+    category: news-commentary
+    vertical: all
+    priority: low
+    check_frequency: weekly
+    language: fr
+    auto_promote: never
+    notes: "La Presse Quebec AI coverage. Context only."
+
+  - id: radio-canada-ia
+    url: https://ici.radio-canada.ca/
+    category: news-commentary
+    vertical: all
+    priority: low
+    check_frequency: weekly
+    language: fr
+    auto_promote: never
+    notes: "Radio-Canada AI coverage. Context only."
+
+  - id: conseiller-ca
+    url: https://www.conseiller.ca/
+    category: news-commentary
+    vertical: professional-services-regulated
+    priority: low
+    check_frequency: weekly
+    language: fr
+    auto_promote: never
+    notes: "Conseiller.ca coverage of CPA / financial-advisor AI adoption. Context only."
+
+  - id: info-ia-quebec
+    url: https://www.infoiaquebec.com/
+    category: news-commentary
+    vertical: all
+    priority: low
+    check_frequency: weekly
+    language: fr
+    auto_promote: never
+    notes: "Info IA Québec curated Gen AI resources. Context only; useful for surfacing new reference documents."
