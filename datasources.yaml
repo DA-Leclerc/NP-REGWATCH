@@ -1,7 +1,7 @@
 # =============================================================================
 # Nord Paradigm Regwatch — Source Registry
 # Repo: DA-Leclerc/NP-REGWATCH
-# Last curated: 2026-04-23 by Dominic
+# Last curated: 2026-04-25 by Dominic
 #
 # Curation discipline: every source must tie to a Brèche Pro vertical module,
 # a Kind 2 / Kind 3 rule, or Signal editorial scope. Sources that don't earn
@@ -170,18 +170,18 @@ sources:
     notes: "Ministère de la Cybersécurité et du Numérique. December 2025 IAG framework for public bodies sets precedent Quebec private-sector may follow."
 
   - id: amf-ai
-    url: https://lautorite.qc.ca/
+    url: https://lautorite.qc.ca/en/general-public/publications/for-professionals/ai-in-the-financial-sector
     category: government
     vertical: professional-services-regulated
     priority: medium
     check_frequency: biweekly
-    language: fr
+    language: bilingual
     auto_promote: on-keyword-match
-    keyword_filter: [intelligence artificielle, IA, secteur financier, lignes directrices]
-    notes: "Autorité des marchés financiers. Financial-sector AI guidelines; relevant for financial advisor / broker sub-verticals."
+    keyword_filter: [intelligence artificielle, IA, secteur financier, lignes directrices, AI, financial sector, guideline]
+    notes: "Autorité des marchés financiers — dedicated AI in the financial sector page. Final AI guideline published 2026-04-07, effective 2027-05-01. Relevant for financial advisor / broker sub-verticals. Domain WAF-blocks web_fetch; routine escalates to Firecrawl fallback (confirmed working 2026-04-25)."
 
   - id: gazette-officielle-ai
-    url: https://www.publicationsduquebec.gouv.qc.ca/fr/gazette-officielle
+    url: https://www.publicationsduquebec.gouv.qc.ca/gazette-officielle/
     category: government
     vertical: all
     priority: high
@@ -205,8 +205,19 @@ sources:
     auto_promote: always
     notes: "Office of the Privacy Commissioner of Canada. Federal privacy + AI guidance. Material for cross-province work."
 
+  - id: csa-acvm-ai
+    url: https://www.securities-administrators.ca/news/
+    category: government
+    vertical: professional-services-regulated
+    priority: medium
+    check_frequency: biweekly
+    language: bilingual
+    auto_promote: on-keyword-match
+    keyword_filter: [artificial intelligence, AI, intelligence artificielle, IA, 11-348, capital markets, marchés financiers, staff notice, avis du personnel]
+    notes: "Canadian Securities Administrators (CSA / ACVM) news archive. Cross-jurisdiction Canadian securities regulator coordination; CSA Staff Notice 11-348 (December 2024) is the current AI-in-capital-markets anchor. Complements amf-ai for cases where CSA-level guidance precedes or supersedes provincial AMF action. Site uses Sucuri Cloudproxy JS challenge; routine escalates to Firecrawl fallback (confirmed working 2026-04-25)."
+
   - id: innovation-gc-ai
-    url: https://ised-isde.canada.ca/site/innovation-better-canada/en/artificial-intelligence
+    url: https://ised-isde.canada.ca/site/ised/en/artificial-intelligence-ecosystem
     category: government
     vertical: all
     priority: high
@@ -271,17 +282,17 @@ sources:
     notes: "Anthropic privacy policy. Data retention, training-data commitments."
 
   - id: openai-enterprise-privacy
-    url: https://openai.com/enterprise-privacy/
+    url: https://trust.openai.com/
     category: vendor-policy
     vertical: all
     priority: high
     check_frequency: weekly
     language: en
     auto_promote: always
-    notes: "OpenAI enterprise privacy commitments. Relevant when clients evaluate ChatGPT Enterprise for regulated-profession workflows."
+    notes: "OpenAI Trust Portal (SafeBase). Enterprise privacy commitments, SOC 2 / ISO certifications, compliance documentation. Relevant when clients evaluate ChatGPT Enterprise for regulated-profession workflows."
 
   - id: google-workspace-privacy
-    url: https://workspace.google.com/terms/privacy.html
+    url: https://cloud.google.com/terms/cloud-privacy-notice
     category: vendor-policy
     vertical: all
     priority: high
@@ -302,14 +313,14 @@ sources:
     notes: "Google Cloud data-residency posture for Canadian customers. Less mature than Microsoft for Canada-resident AI workflows."
 
   - id: clio-security
-    url: https://www.clio.com/security/
+    url: https://trust.clio.com/
     category: vendor-policy
     vertical: professional-services-regulated
     priority: high
     check_frequency: weekly
     language: en
     auto_promote: always
-    notes: "Clio security + Canadian hosting posture. Primary Canada-facing legal-tech reference for Barreau lawyers."
+    notes: "Clio Trust Centre (SafeBase). Security posture, SOC 2 reports, Canadian hosting compliance. Primary Canada-facing legal-tech reference for Barreau lawyers."
 
   - id: heidi-health-security
     url: https://www.heidihealth.com/security
@@ -332,14 +343,14 @@ sources:
     notes: "Jane.app security + Canadian hosting (Montreal / Calgary). Strong default multi-practitioner PMS for private allied health."
 
   - id: abridge-security
-    url: https://www.abridge.com/security
+    url: https://trust.abridge.com/
     category: vendor-policy
     vertical: healthcare-regulated
     priority: medium
     check_frequency: weekly
     language: en
     auto_promote: always
-    notes: "Abridge security. As of April 2026, no public Canadian-residency commitment; monitor for change that would move it back to default-example status."
+    notes: "Abridge Trust Center (SafeBase). HIPAA / SOC 2 documentation. As of April 2026, no public Canadian-residency commitment; monitor for change that would move it back to default-example status."
 
   # -----------------------------------------------------------------------------
   # AI DEV TOOLS (tech-software module)

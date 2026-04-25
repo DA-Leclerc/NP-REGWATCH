@@ -11,9 +11,9 @@ This file is the operating contract for the regwatch Claude Code Routine. When t
 
 ## What this routine does
 
-Each Monday morning, monitor a curated list of Quebec regulatory sources, Canadian vendor policy pages, and related references. Detect material changes week over week. Promote material changes into durable concept files in this repo. Email a digest of findings to `dominic@nordparadigm.com`. Everything lives in this repo; nothing depends on any local machine.
+Each Monday morning, monitor a curated list of Quebec regulatory sources, Canadian vendor policy pages, and related references. Detect material changes week over week. Promote material changes into durable concept files in this repo. Draft a digest of findings as a Gmail draft addressed to `dominic@nordparadigm.com`. Everything lives in this repo; nothing depends on any local machine.
 
-Dominic reviews the email. If a promotion looks wrong, he edits the concept file in the repo directly (sets `status: reverted`) and next week's run picks up the revert.
+Dominic reviews the draft in Gmail and sends it manually (or discards if the run looks broken). If a promotion looks wrong, he edits the concept file in the repo directly (sets `status: reverted`) and next week's run picks up the revert.
 
 ---
 
@@ -43,9 +43,44 @@ Skip sources where `check_frequency` is `biweekly` or `monthly` unless this week
 
 For each source in scope:
 
-1. Use `web_fetch` to retrieve the current page content at `url`.
-2. Extract the primary content (article body, policy text, press release, guidance document) as clean markdown. Preserve headings, lists, tables, and source-language wording verbatim. Do NOT translate. Do NOT summarize.
-3. Write the result to `snapshots/{iso_week}/{id}.md` with this YAML frontmatter:
+1. Use `web_fetch` to retrieve the current page content at `url`. Log `[fetch:web] {id} {http_status}`.
+
+2. **Firecrawl fallback** — if `web_fetch` returns any of the following, automatically retry once via Firecrawl:
+   - HTTP 403
+   - HTTP 503 with a Cloudflare/Sucuri challenge body (response contains `cf-browser-verification`, `Just a moment`, `Sucuri`, `Cloudproxy`, or `Attention Required`)
+   - HTTP 200 with empty or near-empty body (< 200 bytes of meaningful HTML — typical of JavaScript-challenge walls)
+   - Network error / timeout
+   
+   Do NOT escalate on 404 (URL is genuinely dead, fallback won't help and burns Firecrawl credits) or 5xx without a challenge body (transient; surface as failure and retry next week).
+   
+   Firecrawl request:
+   
+   ```
+   POST https://api.firecrawl.dev/v1/scrape
+   Authorization: Bearer ${FIRECRAWL_API_KEY}
+   Content-Type: application/json
+   
+   {
+     "url": "{source_url}",
+     "formats": ["markdown"],
+     "onlyMainContent": false,
+     "waitFor": 2500
+   }
+   ```
+   
+   The `waitFor: 2500` setting matches Brèche Free's Phase 2 Fix 1 calibration (2.5s after initial load lets late-painting widgets and JS challenge resolutions complete; the Firecrawl basic proxy resolves Cloudflare/Sucuri JS challenges in this window).
+   
+   `FIRECRAWL_API_KEY` is set as a Routines-level environment variable; do not hardcode it or read it from another repo at runtime.
+   
+   Log the outcome:
+   - Success → `[fetch:firecrawl-fallback] {id} 200 (escalated from web_fetch {original_status})`
+   - Failure → `[fetch:firecrawl-failed] {id} {http_status} (web_fetch {original_status})`
+   
+   Sources that succeed via the fallback are summarized in the digest (Step 7) so persistent escalations get visibility without polluting the routine logs every run.
+
+3. Extract the primary content (article body, policy text, press release, guidance document) as clean markdown. Preserve headings, lists, tables, and source-language wording verbatim. Do NOT translate. Do NOT summarize.
+
+4. Write the result to `snapshots/{iso_week}/{id}.md` with this YAML frontmatter:
 
 ```yaml
 ---
@@ -53,6 +88,7 @@ id: {id}
 url: {url}
 language: {language}
 fetched_at: {ISO-8601 timestamp}
+fetch_method: {web | firecrawl-fallback}
 source_category: {category}
 priority: {priority}
 ---
@@ -60,14 +96,15 @@ priority: {priority}
 
 Followed by the extracted markdown content.
 
-4. If fetch fails (404, 403, WAF block, timeout), write a failure record:
+5. If both `web_fetch` AND the Firecrawl fallback fail (or `web_fetch` failed for a non-WAF reason like 404 where fallback was correctly skipped), write a failure record:
 
 ```yaml
 ---
 id: {id}
 url: {url}
 fetch_failed: true
-error_code: {HTTP status or error description}
+web_fetch_status: {HTTP status or error from web_fetch}
+firecrawl_status: {HTTP status, error, or "skipped (404)" if fallback was bypassed}
 fetched_at: {ISO-8601 timestamp}
 ---
 ```
@@ -183,6 +220,7 @@ Generated: {ISO-8601 timestamp}
 - {N_promoted} auto-promoted to `concepts/`.
 - {N_logged} logged as context (no auto-promotion).
 - {N_failures} fetch failures.
+- {N_firecrawl_fallbacks} sources required Firecrawl fallback (web_fetch blocked).
 
 ## Promoted (already in `concepts/`; flagged here for review)
 
@@ -224,8 +262,20 @@ Generated: {ISO-8601 timestamp}
 
 ### {source_id}
 - URL: {url}
-- Error: {error_code} at {timestamp}
-- Action: {retry next week | investigate manually — URL may have moved}
+- web_fetch: {status_or_error} at {timestamp}
+- firecrawl-fallback: {status_or_error_or_"skipped (404)"}
+- Action: {retry next week | investigate manually — URL may have moved | Firecrawl quota exhausted}
+
+---
+
+## Firecrawl fallback escalations
+
+List of sources that succeeded only via Firecrawl this week. Routine escalations are not failures, but a source that escalates every week is paying Firecrawl credits indefinitely; consider whether the underlying URL is still the right one.
+
+### {source_id}
+- web_fetch returned: {original_status}
+- Firecrawl resolved with: 200 (basic proxy)
+- Snapshot: `snapshots/{iso_week}/{source_id}.md`
 
 ---
 
@@ -235,6 +285,7 @@ Generated: {ISO-8601 timestamp}
 - [ ] If any critical-priority change affects a current paid Pro customer, consider event-driven email
 - [ ] If any logged-as-context item should have been promoted, manually create a concept file using the template in `concepts/_template.md`
 - [ ] If the same fetch failure occurs 3 weeks in a row, update the URL in `datasources.yaml`
+- [ ] If a source has used Firecrawl fallback for 4+ consecutive weeks, consider whether an alternate URL on a non-WAF subdomain (trust portal, RSS subdomain) exists
 ```
 
 ### Step 8 — Commit to the repo
@@ -249,15 +300,15 @@ Commit message format: `Regwatch {iso_week}: {N_promoted} promoted, {N_logged} l
 
 Push to `main`.
 
-### Step 9 — Email the digest via Gmail connector
+### Step 9 — Draft the digest email via Gmail connector
 
-Send an email via the Gmail connector:
+Create a draft email via the Gmail connector using `create_draft`. Do not send. Dominic reviews and sends manually after skimming the promoted items:
 
 - **To:** dominic@nordparadigm.com
 - **Subject:** `Regwatch {iso_week}: {N_promoted} promoted, {N_logged} logged`
 - **Body (plain text):** The full contents of `digests/{iso_week}.md`, rendered as markdown-to-plain-text (convert `#` headings to UPPERCASE lines, preserve `>` blockquotes with "> " prefix, convert links to `{label} ({url})` format).
 
-If the digest is very long (more than ~2000 lines), include a short summary at the top of the email body pointing to the GitHub file: `View full digest: https://github.com/DA-Leclerc/NP-REGWATCH/blob/main/digests/{iso_week}.md` and include only the Summary + Promoted sections inline.
+If the digest is very long (more than ~2000 lines), include a short summary at the top of the draft body pointing to the GitHub file: `View full digest: https://github.com/DA-Leclerc/NP-REGWATCH/blob/main/digests/{iso_week}.md` and include only the Summary + Promoted sections inline.
 
 ### Step 10 — Done
 
@@ -304,7 +355,11 @@ Do not auto-correct. Log the fetch failure. Mention in the digest: "URL may have
 
 ### A source is behind a WAF / Cloudflare that blocks `web_fetch`
 
-Same handling as 404. Surface the failure. Do not try clever workarounds (cached Google / Bing search / archive.org). These add fragility and muddle the verbatim-preservation rule.
+The Step 3 Firecrawl fallback handles this case automatically (Cloudflare and Sucuri JS challenges resolve through Firecrawl's basic proxy with `waitFor: 2500`). The snapshot frontmatter records `fetch_method: firecrawl-fallback` so escalations are auditable and the digest summarizes which sources used it this week.
+
+Cached or archived workarounds (Google cache, Bing cache, archive.org) remain forbidden — they violate the verbatim-source guarantee because the snapshot may be stale. Firecrawl is allowed because it fetches the live source URL through a proxy; the bytes returned are what the source serves right now.
+
+If both `web_fetch` and the Firecrawl fallback fail (genuine 5xx, hard block, or Firecrawl quota exhaustion), surface the failure as in the 404 case above.
 
 ### Two promotions this week cover the same underlying subject
 
@@ -332,7 +387,8 @@ This will cause false-positive diff detection. Strip obvious dynamic content (ti
 - Do not silently drop fetch failures. Every failure surfaces in the digest.
 - Do not modify `datasources.yaml`. If the registry needs curation changes, flag them in the digest for Dominic to handle manually.
 - Do not create pull requests. Commit directly to `main`. This is an infrastructure routine, not collaborative code.
-- Do not send the email before the commit succeeds. If commit fails, surface the failure in the email subject: `Regwatch {iso_week}: COMMIT FAILED — see logs`.
+- Do not create the draft before the commit succeeds. If commit fails, surface the failure in the draft subject: `Regwatch {iso_week}: COMMIT FAILED — see logs`.
+- Do not actually send the digest email. The routine only drafts; Dominic sends manually after review.
 
 ---
 
